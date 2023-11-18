@@ -52,10 +52,22 @@ class Surface2D:
     edge_lengths = torch.norm(edges, dim=1)
     return torch.sum(edge_lengths, dim=0)
 
-  def count_self_intersections(self) -> torch.Tensor:
+  #returns the cos of the angle between adjacent edges
+  def get_angles_between_edges(self) -> torch.Tensor:
     edges = self.get_edges()
     #get the magnitude of the distances
     edge_lengths = torch.norm(edges, dim=1)
     #get the angle between adjacent edges
-    angles = torch.acos(torch.sum(edges * torch.roll(edges, 1, 0), dim=1) / (edge_lengths * torch.roll(edge_lengths, 1, 0)))
-    return torch.sum(angles > 3.14159, dim=0)
+    dot_products = torch.sum(edges * torch.roll(edges, -1, 0), dim=1)
+    dot_products /= edge_lengths * torch.roll(edge_lengths, -1, 0)
+    #replace nan with 0
+    dot_products = torch.nan_to_num(dot_products)
+    return dot_products
+
+  #roughness is the average of cos of the angles between adjacent edges
+  def get_roughness(self) -> torch.Tensor:
+    angles = -self.get_angles_between_edges()
+    roughness = torch.mean(angles)
+    if(torch.isnan(roughness)):
+      raise Exception("NaN roughness")
+    return roughness

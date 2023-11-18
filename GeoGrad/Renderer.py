@@ -27,6 +27,7 @@ class Renderer:
     xs = vertices[:,0] * space.size_x
     ys = vertices[:,1] * space.size_y
     points = list(zip(xs.astype(int),ys.astype(int)))
+
     pygame.draw.polygon(self.screen, (255,255,255), points, 1)
     pygame.display.flip()
     
@@ -36,6 +37,13 @@ class Renderer:
     while running:
       for func in lambdas:
         func()
+
+      for obj in space.objects:
+        if(torch.isnan(obj.get_vertices()).any()):
+          print("NaN detected")
+          print(obj.get_vertices())
+          running = False
+
       for event in pygame.event.get():
         if event.type == pygame.QUIT:
           running = False

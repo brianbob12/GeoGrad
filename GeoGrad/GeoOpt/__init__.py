@@ -5,3 +5,5 @@ from .MaxSurfaceArea import MaxSurfaceArea
 from .MinSurfaceArea import MinSurfaceArea
 from .MaxEdgeLengthVariance import MaxEdgeLengthVariance
 from .MinEdgeLengthVariance import MinEdgeLengthVariance
+from .MinimizeValue import MinimizeValue
+from .MaximizeValue import MaximizeValue

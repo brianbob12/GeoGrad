@@ -18,5 +18,7 @@ class GeometryOptimizer(ABC):
   def optimize(self):
     self.optimizer.zero_grad()
     error = self.get_error(self.geometry)
+    if(torch.isnan(error)):
+      raise Exception("NaN error")
     error.backward()
     self.optimizer.step()
