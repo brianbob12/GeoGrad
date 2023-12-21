@@ -43,9 +43,9 @@ space.add_object(polygon)
 renderer = Renderer()
 #renderer.start_recording("videos/rightAngles")
 #%%
-global_learning_rate = 0.01
+global_learning_rate = 0.001
 volume_optimizer = GeoOpt.TargetVolume(polygon, 0.1, 1*global_learning_rate)
-surface_area_optimizer = GeoOpt.MinSurfaceArea(polygon, 0.01*global_learning_rate)
+surface_area_optimizer = GeoOpt.MaxSurfaceArea(polygon, 0.005*global_learning_rate)
 variance_optimizer = GeoOpt.MaxEdgeLengthVariance(polygon, 0.04*global_learning_rate)
 smoothness_optimizer = GeoOpt.MinimizeValue(polygon, lambda x: x.get_roughness(), 0.04*global_learning_rate)
 
@@ -60,12 +60,13 @@ def step():
       print("NaN detected - 1")
       print(polygon.get_vertices())
       return
-    print(smoothness_optimizer.get_error(polygon))
+    #print(smoothness_optimizer.get_error(polygon))
     smoothness_optimizer.optimize()
     if(torch.isnan(polygon.get_vertices()).any()):
       print("NaN detected - 2")
       print(polygon.get_vertices())
       return
+    surface_area_optimizer.optimize()
 # %%
-renderer.loop(space, [step])
+renderer.loop(space, [step, print_data])
 # %%
